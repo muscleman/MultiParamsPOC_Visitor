@@ -12,7 +12,9 @@ namespace MultiParamsPOC.Repository
         protected IList<User> Users = new List<User>() { new User() {first_name="Sponge", last_name="Bob" }, new User() { first_name = "Bart", last_name = "Simpson" } };
         public IList<User> GetUsers(IFilter<User> filter)
         {
-            return Users.Where(filter.AsPredicate()).ToList();
+            if (filter.SqlFunc == null) return Users;
+
+            return Users.Where(filter.SqlFunc.Compile()).ToList();
         }
     }
 }

@@ -9,6 +9,6 @@ namespace MultiParamsPOC.Services
 {
     public interface IService
     {
-        IList<User> Getusers(User user);
+        IList<User> Getusers(IFilter<User> filter);
     }
 }

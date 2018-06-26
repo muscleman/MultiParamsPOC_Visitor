@@ -8,7 +8,7 @@ namespace MultiParamsPOC.Filtering
 {
     public interface IFilter<T>
     {
+        Expression<Func<T, bool>> SqlFunc { get; set; }
         string AsSql { get; set; }
-        Func<T, bool> AsPredicate();
     }
 }

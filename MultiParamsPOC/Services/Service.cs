@@ -15,9 +15,8 @@ namespace MultiParamsPOC.Services
         {
             this.repository = repository;
         }
-        public IList<User> Getusers(User user)
+        public IList<User> Getusers(IFilter<User> filter)
         {
-            var filter = new UserFilter(user);
             return repository.GetUsers(filter);
         }
     }

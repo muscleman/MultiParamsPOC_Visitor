@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MultiParamsPOC.Entities;
+using MultiParamsPOC.Filtering;
 using MultiParamsPOC.Services;
 using Newtonsoft.Json;
 
@@ -28,13 +29,16 @@ namespace MultiParamsPOC.Controllers
         public ActionResult<string> GetUsersBy()
         {
             var values = Request.Query;
-            //IVisitor<User> v = new EvalVisitor<User>();
-            //var it = values.GetEnumerator();
-            //while (it.MoveNext())
-            //    v.visit(it.Current.Key, it.Current.Value);
+            IFilter<User> filter = new UserFilter();
+
+            IVisitor<User> v = new EvalVisitor<User>(filter);
+
+            var it = values.GetEnumerator();
+            while (it.MoveNext())
+                v.visit(it.Current.Key, it.Current.Value);
 
 
-            string result = "yes";// service.Getusers(user);
+            var result = service.Getusers(filter);
             return JsonConvert.SerializeObject(result);
         }
 
