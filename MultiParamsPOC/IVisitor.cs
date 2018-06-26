@@ -30,12 +30,13 @@ namespace MultiParamsPOC
             MemberExpression property = Expression.Property(param, key);
             ConstantExpression constant = Expression.Constant(value, typeof(string));
             BinaryExpression where = Expression.Equal(property, constant);
+            Expression<Func<T, bool>> result = Expression.Lambda<Func<T, bool>>(where, param);
 
-            if (filter.SqlFunc == null)
-                filter.SqlFunc = Expression.Lambda<Func<T, bool>>(where, param);
-            else
-                filter.SqlFunc = Expression.Lambda<Func<T, bool>>(Expression.And(filter.SqlFunc,
-                                                        Expression.Lambda<Func<T, bool>>(where, param)));
+            if (filter.SqlFunc != null)
+            {
+                result = Expression.Lambda<Func<T, bool>>(Expression.AndAlso(Expression.Invoke(filter.SqlFunc, param), result.Body),  param );
+            }
+            filter.SqlFunc = result;
         }
 
         public void visit(string key, int value)
@@ -44,7 +45,14 @@ namespace MultiParamsPOC
             MemberExpression property = Expression.Property(param, key);
             ConstantExpression constant = Expression.Constant(value, typeof(int));
             BinaryExpression where = Expression.Equal(property, constant);
-            filter.SqlFunc = Expression.Lambda<Func<T, bool>>(where, param);
+            
+            Expression<Func<T, bool>> result = Expression.Lambda<Func<T, bool>>(where, param);
+
+            if (filter.SqlFunc != null)
+            {
+                result = Expression.Lambda<Func<T, bool>>(Expression.AndAlso(Expression.Invoke(filter.SqlFunc, param), result.Body), param);
+            }
+            filter.SqlFunc = result;
         }
 
     }

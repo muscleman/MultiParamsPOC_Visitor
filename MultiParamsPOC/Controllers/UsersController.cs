@@ -19,6 +19,7 @@ namespace MultiParamsPOC.Controllers
         {
             this.service = service;
         }
+            IFilter<User> filter = new UserFilter();
 
         [HttpGet()]
         //public ActionResult<string> GetUsersBy([FromQuery]string user_guid,
@@ -26,10 +27,24 @@ namespace MultiParamsPOC.Controllers
         //                                       [FromQuery]string legacy_username,
         //                                       [FromQuery]string first_name,
         //                                       [FromQuery]string last_name)
-        public ActionResult<string> GetUsersBy()
+        //public ActionResult<string> GetUsersBy()
+        //{
+        //    var values = Request.Query;
+
+        //    IVisitor<User> v = new EvalVisitor<User>(filter);
+
+        //    var it = values.GetEnumerator();
+        //    while (it.MoveNext())
+        //        v.visit(it.Current.Key, it.Current.Value);
+
+
+        //    var result = service.Getusers(filter);
+        //    return JsonConvert.SerializeObject(result);
+        //}
+
+        public ActionResult<string> GetUsersBy([FromQuery]User user)
         {
             var values = Request.Query;
-            IFilter<User> filter = new UserFilter();
 
             IVisitor<User> v = new EvalVisitor<User>(filter);
 
