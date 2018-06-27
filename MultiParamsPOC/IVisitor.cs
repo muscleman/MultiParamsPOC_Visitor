@@ -12,7 +12,7 @@ namespace MultiParamsPOC
     public interface IVisitor<T>
     {
         void visit(string key, string value);
-        void visit(string key, int value);
+        void visit(string key, int? value);
     }
 
     public class EvalVisitor<T> : IVisitor<T> where T : User
@@ -26,6 +26,8 @@ namespace MultiParamsPOC
 
         public void visit(string key, string value)
         {
+
+
             ParameterExpression param = Expression.Parameter(typeof(T), "x");
             MemberExpression property = Expression.Property(param, key);
             ConstantExpression constant = Expression.Constant(value, typeof(string));
@@ -39,20 +41,23 @@ namespace MultiParamsPOC
             filter.SqlFunc = result;
         }
 
-        public void visit(string key, int value)
+        public void visit(string key, int? value)
         {
-            ParameterExpression param = Expression.Parameter(typeof(T), key);
-            MemberExpression property = Expression.Property(param, key);
-            ConstantExpression constant = Expression.Constant(value, typeof(int));
-            BinaryExpression where = Expression.Equal(property, constant);
-            
-            Expression<Func<T, bool>> result = Expression.Lambda<Func<T, bool>>(where, param);
-
-            if (filter.SqlFunc != null)
+            if (value.HasValue)
             {
-                result = Expression.Lambda<Func<T, bool>>(Expression.AndAlso(Expression.Invoke(filter.SqlFunc, param), result.Body), param);
+                ParameterExpression param = Expression.Parameter(typeof(T), key);
+                MemberExpression property = Expression.Property(param, key);
+                ConstantExpression constant = Expression.Constant(value, typeof(int?));
+                BinaryExpression where = Expression.Equal(property, constant);
+
+                Expression<Func<T, bool>> result = Expression.Lambda<Func<T, bool>>(where, param);
+
+                if (filter.SqlFunc != null)
+                {
+                    result = Expression.Lambda<Func<T, bool>>(Expression.AndAlso(Expression.Invoke(filter.SqlFunc, param), result.Body), param);
+                }
+                filter.SqlFunc = result;
             }
-            filter.SqlFunc = result;
         }
 
     }

@@ -1,4 +1,5 @@
-﻿using MultiParamsPOC.Entities;
+﻿using Microsoft.AspNetCore.Http;
+using MultiParamsPOC.Entities;
 using MultiParamsPOC.Filtering;
 using System;
 using System.Collections.Generic;
@@ -9,6 +10,6 @@ namespace MultiParamsPOC.Services
 {
     public interface IService
     {
-        IList<User> Getusers(IFilter<User> filter);
+        IList<User> Getusers(User user);
     }
 }
