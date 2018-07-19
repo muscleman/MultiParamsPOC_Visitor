@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace MultiParamsPOC
@@ -26,13 +27,26 @@ namespace MultiParamsPOC
 
         public void visit(string key, string value)
         {
-
-
             ParameterExpression param = Expression.Parameter(typeof(T), "x");
             MemberExpression property = Expression.Property(param, key);
-            ConstantExpression constant = Expression.Constant(value, typeof(string));
-            BinaryExpression where = Expression.Equal(property, constant);
-            Expression<Func<T, bool>> result = Expression.Lambda<Func<T, bool>>(where, param);
+            Expression<Func<T, bool>> result;
+
+            if (value.Contains('*'))
+            {
+                value = value.Replace("*", "");
+                ConstantExpression constant = Expression.Constant(value, typeof(string));
+                MethodInfo method = typeof(string).GetMethod("StartsWith", new[] { typeof(string) });
+                var someValue = Expression.Constant(value, typeof(string));
+                var containsMethodExp = Expression.Call(property, method, constant);
+                result = Expression.Lambda<Func<T, bool>>(containsMethodExp, param);
+
+            }
+            else
+            {
+                ConstantExpression constant = Expression.Constant(value, typeof(string));
+                BinaryExpression where = Expression.Equal(property, constant);
+                result = Expression.Lambda<Func<T, bool>>(where, param);
+            }
 
             if (filter.SqlFunc != null)
             {

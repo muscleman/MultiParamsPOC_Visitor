@@ -15,6 +15,7 @@ namespace MultiParamsPOC.Repository
         {
             if (filter.SqlFunc == null) return Users;
 
+            //return Users.Where(x => x.last_name.Contains("B") && x.first_name.Contains("Sponge")).ToList();
             return Users.Where(filter.SqlFunc.Compile()).ToList();
         }
     }

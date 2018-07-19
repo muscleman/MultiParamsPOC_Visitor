@@ -23,9 +23,17 @@ namespace MultiParamsPOC.Controllers
         }
             
 
-        public ActionResult<string> GetUsersBy([FromQuery]User user)
-        {
+        //public ActionResult<string> GetUsersBy([FromQuery]User user)
+        //{
             
+        //    var result = service.Getusers(user);
+        //    return JsonConvert.SerializeObject(result);
+        //}
+
+        [Route("{id?}")]
+        public ActionResult<string> GetStuff([FromQuery]User user)
+        {
+            var id = RouteData.Values["id"];
             var result = service.Getusers(user);
             return JsonConvert.SerializeObject(result);
         }
